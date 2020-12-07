@@ -29,10 +29,11 @@ parameter 	NOP=4'b0000, // no operation
 			INC=4'b1000, // Increment Acc
 			DEC=4'b1001, // Decrement ACC
 			JMP=4'b1010, // Jump to ADDR
+			CLR=4'b1011, // ClearACC
 			HLT=4'b1111; // Halt
 
 // state code			 
-parameter Sidle=5'hf,
+parameter Sidle=5'd31,
 			 S0=5'd0,
 			 S1=5'd1,
 			 S2=5'd2,
@@ -70,9 +71,9 @@ S1:		begin
 			else if (ins==HLT)  next_state=S2;
 			else if (ins==PRE | ins==ADD) next_state=S9;
 			else if (ins==LDM) next_state=S11;
-			else if (ins==INC | ins==DEC) next_state=S14;
-			else if (ins==ADN) next_state = S14;
 			else if (ins==JMP) next_state = S13;
+			else if (ins==INC | ins==DEC) next_state=S14;
+			else if (ins==ADN | ins==CLR) next_state = S14;
 			else next_state=S3;
 		end
 
@@ -93,9 +94,9 @@ S9:		next_state=S10;
 S10:		next_state=S0;
 S11:		next_state=S12;
 S12:		next_state=S0;
-S13: 		next_state=S16;
-S14:		next_state=S6;
-S16:		next_state=S17;
+S13: 		next_state=S15;
+S14:		next_state=S0;
+S15:		next_state=S0;
 S17:		next_state=S0;
 default: next_state=Sidle;
 endcase
@@ -139,7 +140,7 @@ case(state)
 		 fetch=2'b01;
 		 end
      S1: begin
-		 if(ins == ADN)
+		 if(ins == ADN | ins == CLR)
 		 begin
 		 write_r=0;
 		 read_r=0;
@@ -395,14 +396,14 @@ case(state)
 	 S13: begin 
 		 write_r=0;
 		 read_r=0;
-		 PC_en=0;
+		 PC_en=1;
 		 ac_ena=0; 
 		 ram_ena=0;
 		 rom_ena=1;
 		 ram_write=0;
 		 ram_read=0;
 		 rom_read=1;
-		 pc_in = 0;
+		 pc_in = 1;
 		 ad_sel=0;
 	    fetch=2'b01; 
 		 im_int = 0;
@@ -422,25 +423,10 @@ case(state)
 		 fetch=2'b00;	
 		 im_int = 0; 
 		 end
-	S16: begin 
+	S15: begin 
 		 write_r=0;
 		 read_r=0;
 		 PC_en=0;
-		 pc_in=1;
-		 ac_ena=0;
-		 ram_ena=0;
-		 rom_ena=1;
-		 ram_write=0;
-		 ram_read=0;
-		 rom_read=1;
-		 ad_sel=0;
-		 fetch=2'b00;	
-		 im_int = 0; 
-		 end
-	S17: begin
-		 write_r=0;
-		 read_r=0;
-		 PC_en=1;
 		 pc_in=0;
 		 ac_ena=0;
 		 ram_ena=0;

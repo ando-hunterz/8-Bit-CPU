@@ -20,10 +20,11 @@ initial begin
 	memory[4] = 8'b10010001; //DEC
 	memory[5] = 8'b0111_0011; //ADN 2 
 	memory[6] = 8'b10000001; //INC
-	memory[7] = 8'b1010_0011;	//JMP
-	memory[8] = 8'b0000_1111;
-	memory[15] = 8'b10000001;
-	memory[16] = 8'b1111_00000;
+	memory[7] = 8'b1010_0011;	//JMP to memory[15]
+	memory[8] = 8'b0000_1111; // NOP         
+	memory[15] = 8'b10000001; // INC
+	memory[16] = 8'b1011_0000; //CLR
+	memory[17] = 8'b1111_0000;
 //	memory[1] = 8'b001_00001;	//LDO s1
 //	memory[2] = 8'b010_00001;	//rom(65)	//rom[65] -> reg[1]
 //	memory[3] = 8'b001_00010;	//LDO s2

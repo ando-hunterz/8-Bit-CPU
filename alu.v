@@ -19,10 +19,12 @@ parameter 	NOP=4'b0000, // no operation
 			INC=4'b1000, // Increment Acc
 			DEC=4'b1001, // Decrement ACC
 			JMP=4'b1010, // Jump to ADDR
+			CLR=4'b1011,
 			HLT=4'b1111; // Halt
 			
 always @(posedge im_int) begin
-		 temp_reg <= accum+alu_in[3:0];
+		if(op == ADN) temp_reg <= accum+alu_in[3:0];
+		else temp_reg <= 8'd0;
 end
 			
 			
@@ -37,9 +39,10 @@ always @(*) begin
 		ADD:	alu_out = accum+alu_in;
 		LDM:	alu_out = accum;
 		ADN:  alu_out = temp_reg;
+		CLR:  alu_out = temp_reg;
 		INC:  alu_out = accum+1;
 		JMP:  alu_out = alu_in;
-		DEC:  alu_out = (accum > 0) ? accum-1 : 8'd0;
+		DEC:  alu_out = accum-1;
 		default:	alu_out = 8'bzzzz_zzzz;
 		endcase
 end

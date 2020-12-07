@@ -14,7 +14,7 @@ always @(posedge clock or negedge rst) begin
 		if (en) 
 		begin 
 			if(pc_in) pc_addr <= data;
-			else pc_addr <= pc_addr;
+			else pc_addr <= pc_addr+1;
 		end
 		else pc_addr <= pc_addr;
 	end
