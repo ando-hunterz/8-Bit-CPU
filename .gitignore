@@ -1,0 +1,11 @@
+/simulation
+/output
+/output_files
+/db
+/assets
+/incremental_db
+*.qpf
+*.qps
+*.qws
+*.rpt
+*.txt
