@@ -48,8 +48,11 @@ initial begin
 	
 	memory[34] = 8'b0011_0011;	//STO s3
 	memory[35] = 8'b000_00010;	//ram(2)
-	memory[36] = 8'b1100_0010; //SUB 2
-	memory[37] = 8'b1111_00000;	//HLT
+	
+	memory[36] = 8'b0001_0100;	//LDO s4
+	memory[37] = 8'b0100_0010;	//rom(66)
+	memory[38] = 8'b1100_0100; //SUB s4
+	memory[39] = 8'b1111_00000;	//HLT
 	
 	memory[65] = 8'b00100101;	//37
 	memory[66] = 8'b01011001;	//89

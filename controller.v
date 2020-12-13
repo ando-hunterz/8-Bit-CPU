@@ -30,7 +30,6 @@ parameter 	NOP=4'b0000, // no operation
 			DEC=4'b1001, // Decrement ACC
 			JMP=4'b1010, // Jump to ADDR
 			CLR=4'b1011, // ClearACC
-			SUB=4'b1100, // Subtract 
 			HLT=4'b1111; // Halt
 
 // state code			 
@@ -70,7 +69,7 @@ case(state)
 S1:		begin
 			if (ins==NOP) next_state=S0;
 			else if (ins==HLT)  next_state=S2;
-			else if (ins==PRE | ins==ADD | ins==SUB) next_state=S9;
+			else if (ins==PRE | ins==ADD) next_state=S9;
 			else if (ins==LDM) next_state=S11;
 			else if (ins==JMP) next_state = S13;
 			else if (ins==INC | ins==DEC) next_state=S14;
