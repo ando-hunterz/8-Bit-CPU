@@ -23,35 +23,37 @@ initial begin
 	memory[7] = 8'b1010_0011;	//JMP to memory[15]
 	memory[8] = 8'b0000_1111; // NOP         
 	memory[15] = 8'b10000001; // INC
-	memory[16] = 8'b1011_0000; //CLR
-	memory[17] = 8'b1111_0000;
-//	memory[1] = 8'b001_00001;	//LDO s1
-//	memory[2] = 8'b010_00001;	//rom(65)	//rom[65] -> reg[1]
-//	memory[3] = 8'b001_00010;	//LDO s2
-//	memory[4] = 8'b010_00010;	//rom(66)
-//	memory[5] = 8'b001_00011;	//LDO s3
-//	memory[6] = 8'b010_00011;	//rom(67)
-//
-//	memory[7] = 8'b100_00001;	//PRE s1
-//	memory[8] = 8'b101_00010;	//ADD s2
-//	memory[9] = 8'b110_00001;	//LDM s1
-//	
-//	memory[10] = 8'b011_00001;	//STO s1
-//	memory[11] = 8'b000_00001;	//ram(1)
-//	memory[12] = 8'b010_00010;	//LDA s2
-//	memory[13] = 8'b000_00001;	//ram(1)
-//	
-//	memory[14] = 8'b100_00011;	//PRE s3
-//	memory[15] = 8'b101_00010;	//ADD s2
-//	memory[16] = 8'b110_00011;	//LDM s3
-//	
-//	memory[17] = 8'b011_00011;	//STO s3
-//	memory[18] = 8'b000_00010;	//ram(2)
-//	memory[19] = 8'b111_00000;	//HLT
-//	
-//	memory[65] = 8'b001_00101;	//37
-//	memory[66] = 8'b010_11001;	//89
-//	memory[67] = 8'b001_10101;	//53
+	memory[16] = 8'b1000_0000; // INC
+	memory[17] = 8'b1011_0000; //CLR
+	
+	memory[18] = 8'b0001_0001;	//LDO s1
+	memory[19] = 8'b0100_0001;	//rom(65)	//rom[65] -> reg[1]
+	memory[20] = 8'b0001_0010;	//LDO s2
+	memory[21] = 8'b0100_0010;	//rom(66)
+	memory[22] = 8'b0001_0011;	//LDO s3
+	memory[23] = 8'b0100_0011;	//rom(67)
+
+	memory[24] = 8'b0100_0001;	//PRE s1
+	memory[25] = 8'b0101_0010;	//ADD s2
+	memory[26] = 8'b0110_0001;	//LDM s1
+	
+	memory[27] = 8'b0011_0001;	//STO s1
+	memory[28] = 8'b000_00001;	//ram(1)
+	memory[29] = 8'b0010_0010;	//LDA s2
+	memory[30] = 8'b000_00001;	//ram(1)
+	
+	memory[31] = 8'b0100_0011;	//PRE s3
+	memory[32] = 8'b0101_0010;	//ADD s2
+	memory[33] = 8'b0110_0011;	//LDM s3
+	
+	memory[34] = 8'b0011_0011;	//STO s3
+	memory[35] = 8'b000_00010;	//ram(2)
+	memory[36] = 8'b1100_0010; //SUB 2
+	memory[37] = 8'b1111_00000;	//HLT
+	
+	memory[65] = 8'b00100101;	//37
+	memory[66] = 8'b01011001;	//89
+	memory[67] = 8'b00110101;	//53
 end
 
 

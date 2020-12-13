@@ -19,7 +19,8 @@ parameter 	NOP=4'b0000, // no operation
 			INC=4'b1000, // Increment Acc
 			DEC=4'b1001, // Decrement ACC
 			JMP=4'b1010, // Jump to ADDR
-			CLR=4'b1011,
+			CLR=4'b1011, // Clear ACC
+			SUB=4'b1100, // Subtract
 			HLT=4'b1111; // Halt
 			
 always @(posedge im_int) begin
@@ -43,6 +44,7 @@ always @(*) begin
 		INC:  alu_out = accum+1;
 		JMP:  alu_out = alu_in;
 		DEC:  alu_out = accum-1;
+		SUB:  alu_out = accum-alu_in;
 		default:	alu_out = 8'bzzzz_zzzz;
 		endcase
 end
