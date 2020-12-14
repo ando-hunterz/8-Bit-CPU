@@ -7,7 +7,7 @@ input [7:0] addr;
 
 output [7:0] data;
 
-reg [7:0] R[15:0]; //16Byte
+reg [7:0] R[15:0]; // 16Byte
 wire [3:0] r_addr; // 4bit register addr
 
 assign r_addr = addr[3:0];

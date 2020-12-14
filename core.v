@@ -24,11 +24,10 @@ accum ACCUM1(.out(accum_out), .in(alu_out), .ena(ac_ena), .clk(clk), .rst(rst));
 alu ALU1(.alu_out(alu_out), .alu_in(data), .accum(accum_out), .op(ins), .im_int(im_int), .pc_in(pc_in));				// module alu(alu_out, alu_in, accum, op);
 
 reg_32 REG1(.in(alu_out), .data(data), .write(write_r), .read(read_r), .addr({ins,reg_ad}), .clk(clk));	//module reg_32(in, data, write, read, addr, clk);
-//reg_32 REG1(.in(alu_out), .data(data), .write(write_r), .read(read_r), .addr(reg_ad), .clk(clk));		//module reg_32(in, data, write, read, addr, clk);
 
 ins_reg IR1(.data(data), .fetch(fetch), .clk(clk), .rst(rst), .ins(ins), .ad1(reg_ad), .ad2(ir_ad));	//module ins_reg(data, fetch, clk, rst, ins, ad1, ad2);
 
-//module machine(ins, clk, rst, write_r, read_r, PC_en, fetch, ac_ena, ram_ena, rom_ena,ram_write, ram_read, rom_read, ad_sel);
+//module controller(ins, clk, rst, write_r, read_r, PC_en, fetch, ac_ena, ram_ena, rom_ena,ram_write, ram_read, rom_read, ad_sel);
 controller CONTROLLER1(.ins(ins), 
 					.clk(clk), 
 					.rst(rst), 

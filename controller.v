@@ -73,14 +73,13 @@ S1:		begin
 			else if (ins==LDM) next_state=S11;
 			else if (ins==JMP) next_state = S13;
 			else if (ins==INC | ins==DEC) next_state=S14;
-			else if (ins==ADN | ins==CLR) next_state = S14;
+			else if (ins==ADN | ins==CLR) next_state=S14;
 			else next_state=S3;
 		end
 
 S4:		begin
 			if (ins==LDA | ins==LDO) next_state=S5;
 			else next_state=S7; 
-			 // ---Note: there are only 3 long instrucions. So, all the cases included. if (counter_A==2*b11)
 		end
 Sidle:	next_state=S0;
 S0:		next_state=S1;
@@ -138,7 +137,7 @@ case(state)
 		 im_int = 0;
 		 fetch=2'b01;
 		 end
-     S1: begin
+     S1: begin // PC+1 and begin instruction
 		 if(ins == ADN | ins == CLR)
 		 begin
 		 write_r=0;
@@ -188,7 +187,7 @@ case(state)
 		 fetch=2'b00;
 		 end
 		 end
-     S2: begin
+     S2: begin //Halt -> S2 Looping
 		 write_r=0;
 		 read_r=0;
 		 PC_en=0;
@@ -203,8 +202,8 @@ case(state)
 		 fetch=2'b00;
 		 im_int = 0;
 		 end
-     S3: begin 
-		 write_r=0;
+     S3: begin  //Fetch IR 2
+		 write_r=0; 
 		 read_r=0;
 		 PC_en=0;
 		 ac_ena=1; 
@@ -218,7 +217,7 @@ case(state)
 	    fetch=2'b10; 
 		 im_int = 0;
 		 end
-	 S4: begin
+	 S4: begin // PC + 1
 		 write_r=0;
 		 read_r=0;
 		 PC_en=1;
@@ -233,7 +232,7 @@ case(state)
 		 fetch=2'b10; 
 		 im_int = 0;
 		 end
-     S5: begin
+     S5: begin // Begin LDA to LDO
 		 if (ins==LDO)
 		 begin
 		 write_r=1;
@@ -267,10 +266,10 @@ case(state)
 		 im_int = 0;
 		 end	 
 		 end
-     S6: begin 
+     S6: begin //Protect 
 		 write_r=1'b0;
 		 read_r=1'b0;
-		 PC_en=1'b0; //** not so sure, log: change 1 to 0
+		 PC_en=1'b0; 
 		 ac_ena=1'b0;
 		 ram_ena=1'b0;
 		 rom_ena=1'b0;
@@ -347,7 +346,7 @@ case(state)
 		 im_int = 0;		 
 		 end 
 		 end
-    S10: begin
+    S10: begin // Write to accumm
 		 write_r=0;
 		 read_r=1;
 		 PC_en=0;
@@ -377,7 +376,7 @@ case(state)
 		 fetch=2'b00;
 		 pc_in = 0;
 		 end
-    S12: begin 
+    S12: begin // Protect
 		 write_r=0;
 		 read_r=0;
 		 PC_en=0;
@@ -392,7 +391,7 @@ case(state)
 		 fetch=2'b00;	
 		 im_int = 0; 
 		 end
-	 S13: begin 
+	 S13: begin // Write specific addr to PC
 		 write_r=0;
 		 read_r=0;
 		 PC_en=1;
@@ -407,7 +406,7 @@ case(state)
 	    fetch=2'b01; 
 		 im_int = 0;
 		 end
-	S14: begin
+	S14: begin // Increment, Decrement or Add the number to ACCUM
 		 write_r=0;
 		 read_r=0;
 		 PC_en=0;
@@ -422,7 +421,7 @@ case(state)
 		 fetch=2'b00;	
 		 im_int = 0; 
 		 end
-	S15: begin 
+	S15: begin // Protect
 		 write_r=0;
 		 read_r=0;
 		 PC_en=0;
