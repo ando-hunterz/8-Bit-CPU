@@ -46,9 +46,11 @@ initial begin
 	memory[27] = 8'b1000_0001; // INC
 	memory[28] = 8'b0101_0101; // ADD R5
 	memory[29] = 8'b0110_0110; // LDM R6
+	memory[30] = 8'b1100_0011; // SUB R3
+	memory[31] = 8'b0110_0111; // LDM R7
 	
-	memory[30] = 8'b1010_0011; // JMP TO Memory[14]
-	memory[31] = 8'b0000_1110; // Memory[14]
+	memory[32] = 8'b1010_0011; // JMP TO Memory[14]
+	memory[33] = 8'b0000_1110; // Memory[14]
 	
 	memory[129] = 8'b0110_0100; // 100
 	memory[130] = 8'b0011_0010; // 50

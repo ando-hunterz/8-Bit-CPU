@@ -73,4 +73,5 @@ INC|1000|**Inc**rease ACCUM count|Menambah hasil dari ACCUM dengan integer satu 
 DEC|1001|**Dec**rease ACCUM count|Mengurangi hasil dari ACCUM dengan integer satu|Short
 JMP|1010|**J**u**mp** to Address|Mengambil address dari ROM dan melompat ke instruksi dengan address tersebut|Long
 CLR|1011|**Cl**ea**r** ACCUM|Melakukan Pengosongan pada ACCUM|Short
+SUB|1100|**Sub**tract register data from ACCUM |Melakukan pengurangan sejumlah data Register pada ACCUM|Short
 HLT|1111|**H**a**lt** the operation|Memberhentikan Operasi|short
