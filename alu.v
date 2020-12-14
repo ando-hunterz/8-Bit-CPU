@@ -1,11 +1,11 @@
 `timescale 1ns / 1ps
 //////////////////////////////////////////////////////////////////////////////////
-module alu(alu_out, alu_in, accum, op,im_int,temp_reg, pc_in);//  arithmetic logic unit
+module alu(alu_out, alu_in, accum, op,im_int, pc_in);//  arithmetic logic unit
     // to perform arithmetic and logic operations.
 input [3:0] op;
 input [7:0] alu_in,accum;
 input im_int, pc_in;
-output reg [3:0] temp_reg;
+reg [7:0] temp_reg;
 output reg [7:0] alu_out;
 
 parameter 	NOP=4'b0000, // no operation
@@ -23,7 +23,7 @@ parameter 	NOP=4'b0000, // no operation
 			HLT=4'b1111; // Halt
 			
 always @(posedge im_int) begin
-		if(op == ADN) temp_reg <= accum+alu_in[3:0];
+		if(op == ADN) temp_reg <= accum+(alu_in[3:0]);
 		else temp_reg <= 8'd0;
 end
 			

@@ -10,8 +10,6 @@ wire [7:0] accum_out, alu_out;
 wire [7:0] ir_ad, pc_ad;
 wire [3:0] reg_ad;
 wire [3:0] ins;
-wire [4:0] state;
-wire [3:0] temp_reg;
 
 ram RAM1(.data(data), .addr(addr), .ena(ram_ena), .read(ram_read), .write(ram_write));  //module ram(data, addr, ena, read, write);
 
@@ -23,7 +21,7 @@ counter PC1(.pc_addr(pc_ad), .clock(clk), .rst(rst), .en(PC_en), .pc_in(pc_in), 
 
 accum ACCUM1(.out(accum_out), .in(alu_out), .ena(ac_ena), .clk(clk), .rst(rst)); 		//module accum( in, out, ena, clk, rst); 
 
-alu ALU1(.alu_out(alu_out), .alu_in(data), .accum(accum_out), .op(ins), .im_int(im_int), .temp_reg(temp_reg), .pc_in(pc_in));				// module alu(alu_out, alu_in, accum, op);
+alu ALU1(.alu_out(alu_out), .alu_in(data), .accum(accum_out), .op(ins), .im_int(im_int), .pc_in(pc_in));				// module alu(alu_out, alu_in, accum, op);
 
 reg_32 REG1(.in(alu_out), .data(data), .write(write_r), .read(read_r), .addr({ins,reg_ad}), .clk(clk));	//module reg_32(in, data, write, read, addr, clk);
 //reg_32 REG1(.in(alu_out), .data(data), .write(write_r), .read(read_r), .addr(reg_ad), .clk(clk));		//module reg_32(in, data, write, read, addr, clk);
@@ -46,7 +44,6 @@ controller CONTROLLER1(.ins(ins),
 					.rom_read(rom_read), 
 					.ad_sel(ad_sel),
 					.pc_in(pc_in),
-					.state(state),
 					.im_int(im_int)
 					);
 					

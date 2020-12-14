@@ -1,12 +1,12 @@
 `timescale 1ns / 1ps
 //////////////////////////////////////////////////////////////////////////////////
-module machine(ins, clk, rst, write_r, read_r, PC_en, fetch, ac_ena, ram_ena, rom_ena,ram_write, ram_read, rom_read, ad_sel);
+module machine(ins, clk, rst, write_r, read_r, PC_en, fetch, ac_ena, ram_ena, rom_ena,ram_write, ram_read, rom_read, ad_sel,im_int,pc_in);
 
 input clk, rst;   		// clock, reset
-input [2:0] ins;  		// instructions, 3 bits, 8 types
+input [3:0] ins;  		// instructions, 3 bits, 8 types
 
 // Enable signals
-output reg write_r, read_r, PC_en, ac_ena, ram_ena, rom_ena;
+output reg write_r, read_r, PC_en, ac_ena, ram_ena, rom_ena, im_int, pc_in;
 
 // ROM: where instructions are storaged. Read only.
 // RAM: where data is storaged, readable and writable.
@@ -15,35 +15,43 @@ output reg ram_write, ram_read, rom_read, ad_sel;
 output reg [1:0] fetch;		// 01: to fetch from RAM/ROM; 10: to fetch from REG
 
 // State code(current state)
-reg [3:0] state;		// current state
-reg [3:0] next_state; 	// next state
+reg [4:0] state;		// current state
+reg [4:0] next_state; 	// next state
 
 
 // instruction code
-parameter 	NOP=4'b000, // no operation
-			LDO=4'b001,	// load ROM to register
-			LDA=4'b010, // load RAM to register
-			STO=3'b011, // Store intermediate results to accumulator
-			PRE=3'b100, // Prefetch Data from Address
-			ADD=3'b101, // Adds the contents of the memory address or integer to the accumulator
-			LDM=3'b110, // Load Multiple
-			HLT=3'b111; // Halt
+parameter 	NOP=4'b0000, // no operation
+			LDO=4'b0001,	// load ROM to register
+			LDA=4'b0010, // load RAM to register
+			STO=4'b0011, // Store intermediate results to accumulator
+			PRE=4'b0100, // Prefetch Data from Address
+			ADD=4'b0101, // Adds the contents of the memory address or integer to the accumulator
+			LDM=4'b0110, // Load Multiple
+			ADN=4'b0111, // Add integer
+			INC=4'b1000, // Increment Acc
+			DEC=4'b1001, // Decrement ACC
+			JMP=4'b1010, // Jump to ADDR
+			CLR=4'b1011, // ClearACC
+			HLT=4'b1111; // Halt
 
 // state code			 
-parameter Sidle=4'hf,
-			 S0=4'd0,
-			 S1=4'd1,
-			 S2=4'd2,
-			 S3=4'd3,
-			 S4=4'd4,
-			 S5=4'd5,
-			 S6=4'd6,
-			 S7=4'd7,
-			 S8=4'd8,
-			 S9=4'd9,
-			 S10=4'd10,
-			 S11=4'd11,
-			 S12=4'd12;
+parameter Sidle=5'd31,
+			 S0=5'd0,
+			 S1=5'd1,
+			 S2=5'd2,
+			 S3=5'd3,
+			 S4=5'd4,
+			 S5=5'd5,
+			 S6=5'd6,
+			 S7=5'd7,
+			 S8=5'd8,
+			 S9=5'd9,
+			 S10=5'd10,
+			 S11=5'd11,
+			 S12=5'd12,
+			 S13=5'd13,
+			 S14=5'd14,
+			 S15=5'd15;
 			 
 //PART A: D flip latch; State register
 always @(posedge clk or negedge rst) 
@@ -64,32 +72,39 @@ S1:		begin
 			else if (ins==HLT)  next_state=S2;
 			else if (ins==PRE | ins==ADD) next_state=S9;
 			else if (ins==LDM) next_state=S11;
+			else if (ins==JMP) next_state = S13;
+			else if (ins==INC | ins==DEC) next_state=S14;
+			else if (ins==ADN | ins==CLR) next_state = S14;
 			else next_state=S3;
 		end
 
 S4:		begin
 			if (ins==LDA | ins==LDO) next_state=S5;
-			//else if (ins==STO) next_state=S7; 
-			else next_state=S7; // ---Note: there are only 3 long instrucions. So, all the cases included. if (counter_A==2*b11)
+			else next_state=S7; 
+			 // ---Note: there are only 3 long instrucions. So, all the cases included. if (counter_A==2*b11)
 		end
 Sidle:	next_state=S0;
 S0:		next_state=S1;
-S2:	    next_state=S2;
+S2:	   next_state=S2;
 S3:		next_state=S4;
 S5:		next_state=S6;
 S6:		next_state=S0;
 S7:		next_state=S8;
 S8:		next_state=S0;
 S9:		next_state=S10;
-S10:	next_state=S0;
-S11:	next_state=S12;
-S12:	next_state=S0;
+S10:		next_state=S0;
+S11:		next_state=S12;
+S12:		next_state=S0;
+S13: 		next_state=S15;
+S14:		next_state=S0;
+S15:		next_state=S0;
 default: next_state=Sidle;
 endcase
+end
 
 // assign style
 // TODO
-end
+
 
 // another style
 //PART C: Output combinational logic
@@ -101,7 +116,7 @@ case(state)
   Sidle: begin
 		 write_r=1'b0;
 		 read_r=1'b0;
-		 PC_en=1'b0; //** not so sure, log: change 1 to 0
+		 PC_en=1'b0; 
 		 ac_ena=1'b0;
 		 ram_ena=1'b0;
 		 rom_ena=1'b0;
@@ -109,6 +124,8 @@ case(state)
 		 ram_read=1'b0;
 		 rom_read=1'b0;
 		 ad_sel=1'b0;
+		 pc_in = 0;
+		 im_int = 0;
 		 fetch=2'b00;
 		 end
      S0: begin // load IR
@@ -122,30 +139,59 @@ case(state)
 		 ram_read=0;
 		 rom_read=1;
 		 ad_sel=0;
+		 pc_in = 0;
+		 im_int = 0;
 		 fetch=2'b01;
-		 		 
-		 //write_r, read_r, PC_en, ac_ena, ram_ena, rom_ena;
-		 //ram_write, ram_read, rom_read, ad_sel;
-		 
-//		 fetch=2'b01; // fetch ins+reg_addr from ROM
-//		 rom_read=1;
-//		 rom_ena=1;
 		 end
      S1: begin
+		 if(ins == ADN | ins == CLR)
+		 begin
 		 write_r=0;
 		 read_r=0;
-		 PC_en=1; //PC+1
+		 PC_en=1; 
 		 ac_ena=0;
 		 ram_ena=0;
-		 rom_ena=0;
 		 ram_write=0;
 		 ram_read=0;
-		 rom_read=0;
+		 rom_ena=1;
+		 rom_read=1; 
 		 ad_sel=0;
+		 pc_in = 0;
+		 im_int = 1;
 		 fetch=2'b00;
-//		 		 
-//		 PC_en=1;
-//		 ad_sel=0; // **not so sure, sel=0, select pc_addr(where next ins located)
+		 end
+		 else if(ins == JMP)
+		 begin
+		 write_r=0;
+		 read_r=0;
+		 PC_en=1; 
+		 ac_ena=0;
+		 ram_ena=0;
+		 ram_write=0;
+		 ram_read=0;
+		 rom_ena=1;
+		 rom_read=1; 
+		 ad_sel=0;
+		 pc_in = 0;
+		 im_int = 0;
+		 fetch=2'b00;
+		 end
+		 else
+		 begin
+		 write_r=0;
+		 read_r=0;
+		 PC_en=1; 
+		 ac_ena=0;
+		 ram_ena=0;
+		 ram_write=0;
+		 ram_read=0;
+		 rom_ena=1;
+		 rom_read=1; 
+		 ad_sel=0;
+		 pc_in = 0;
+		 im_int = 0;
+		 fetch=2'b00;
+		 end
 		 end
      S2: begin
 		 write_r=0;
@@ -158,40 +204,39 @@ case(state)
 		 ram_read=0;
 		 rom_read=0;
 		 ad_sel=0;
+		 pc_in = 0;
 		 fetch=2'b00;
+		 im_int = 0;
 		 end
-     S3: begin
+     S3: begin 
 		 write_r=0;
 		 read_r=0;
 		 PC_en=0;
-		 ac_ena=0;
+		 ac_ena=1; 
 		 ram_ena=0;
 		 rom_ena=1;
 		 ram_write=0;
 		 ram_read=0;
 		 rom_read=1;
+		 pc_in = 0;
 		 ad_sel=0;
-		 fetch=2'b01;
-		 
-//		 fetch=2'b01;
-//		 rom_read=1;
-//		 rom_ena=1;
+	    fetch=2'b10; 
+		 im_int = 0;
 		 end
-     S4: begin
+	 S4: begin
 		 write_r=0;
 		 read_r=0;
 		 PC_en=1;
-		 ac_ena=0;
+		 ac_ena=1;
 		 ram_ena=0;
-		 rom_ena=0;
 		 ram_write=0;
 		 ram_read=0;
-		 rom_read=0;
+		 rom_ena=1; 
+		 rom_read=1;
 		 ad_sel=0;
-		 fetch=2'b00;
-		 
-//		 PC_en=1;
-//		 ad_sel=0;
+		 pc_in = 0;
+		 fetch=2'b10; 
+		 im_int = 0;
 		 end
      S5: begin
 		 if (ins==LDO)
@@ -199,64 +244,50 @@ case(state)
 		 write_r=1;
 		 read_r=0;
 		 PC_en=0;
-		 ac_ena=0;
+		 ac_ena=1;
 		 ram_ena=0;
-		 rom_ena=1;
 		 ram_write=0;
 		 ram_read=0;
+		 rom_ena=1;
 		 rom_read=1;
-		 ad_sel=1; // ! Attention, don't forget
-		 fetch=2'b00;			 
-		 end
-		 else // ins==LDA
-		 begin
-		 write_r=1;
-		 read_r=0;
-		 PC_en=0;
-		 ac_ena=0;
-		 ram_ena=1;
-		 rom_ena=0;
-		 ram_write=0;
-		 ram_read=1;
-		 rom_read=0;
 		 ad_sel=1;
-		 fetch=2'b00;
-		 end	 
-		 
-//		 write_r=1;
-//		 ram_ena=1;
-		 end
-     S6: begin  // same as s5
-		 if (ins==LDO)
-		 begin
-		 write_r=1;
-		 read_r=0;
-		 PC_en=0;
-		 ac_ena=0;
-		 ram_ena=0;
-		 rom_ena=1;
-		 ram_write=0;
-		 ram_read=0;
-		 rom_read=1;
-		 ad_sel=1; 
-		 fetch=2'b00;			 
+		 pc_in =0;
+		 fetch=2'b01; 
+		 im_int = 0;		 
 		 end
 		 else 
 		 begin
 		 write_r=1;
 		 read_r=0;
 		 PC_en=0;
-		 ac_ena=0;
+		 ac_ena=1;
 		 ram_ena=1;
-		 rom_ena=0;
-		 ram_write=0;
+	    ram_write=0;
 		 ram_read=1;
+		 rom_ena=0;
 		 rom_read=0;
 		 ad_sel=1;
-		 fetch=2'b00;
+		 pc_in = 0;
+		 fetch=2'b01;
+		 im_int = 0;
 		 end	 
-	
 		 end
+     S6: begin 
+		 write_r=1'b0;
+		 read_r=1'b0;
+		 PC_en=1'b0; //** not so sure, log: change 1 to 0
+		 ac_ena=1'b0;
+		 ram_ena=1'b0;
+		 rom_ena=1'b0;
+		 ram_write=1'b0;
+		 ram_read=1'b0;
+		 rom_read=1'b0;
+		 ad_sel=1'b0;
+		 fetch=2'b00;
+		 pc_in = 0;
+		 im_int = 0;
+		 end
+
      S7: begin // STO, reg->ram. step1. read REG
 		 write_r=0;
 		 read_r=1;
@@ -268,25 +299,24 @@ case(state)
 		 ram_read=0;
 		 rom_read=0;
 		 ad_sel=0;
-		 fetch=2'b01;
-		 		 
-		 //read_r=1;
+		 pc_in = 0;
+		 fetch=2'b00;
+		 im_int = 0;
 		 end
      S8: begin // STO, step2, write RAM
 		 write_r=0;
-		 read_r=0;
+		 read_r=1;
 		 PC_en=0;
 		 ac_ena=0;
-		 ram_ena=1;
+		 rom_read=0;
 		 rom_ena=0;
+		 pc_in = 0;
+		 ram_ena=1;
 		 ram_write=1;
 		 ram_read=0;
-		 rom_read=0;
+		 im_int = 0;
 		 ad_sel=1;
-		 fetch=2'b10; //fetch=2'b10, ram_ena=1, ram_write=1, ad_sel=1;
-		 
-//		 ram_ena=1;
-//		 ram_write=1;
+		 fetch=2'b00; //fetch=2'b10, ram_ena=1, ram_write=1, ad_sel=1;
 		 end
      S9: begin 
 		 if (ins==PRE) // REG->ACCUM
@@ -294,17 +324,35 @@ case(state)
 		 write_r=0;
 		 read_r=1;
 		 PC_en=0;
-		 ac_ena=0;
+		 ac_ena=1;
 		 ram_ena=0;
 		 rom_ena=0;
 		 ram_write=0;
 		 ram_read=0;
 		 rom_read=0;
 		 ad_sel=0;
-		 fetch=2'b01;
+		 pc_in = 0;
+		 fetch=2'b00;
+		 im_int = 0;
 		 end
-		 else // ins==ADD, same as PRE
+		 else 
 		 begin 
+		 write_r=0;
+		 read_r=1;
+		 PC_en=0;
+		 ac_ena=1;
+		 ram_ena=0;
+		 rom_ena=0;
+		 ram_write=0;
+		 ram_read=0;
+		 rom_read=0;
+		 ad_sel=0;
+		 pc_in = 0;
+		 fetch=2'b00;
+		 im_int = 0;		 
+		 end 
+		 end
+    S10: begin
 		 write_r=0;
 		 read_r=1;
 		 PC_en=0;
@@ -315,23 +363,9 @@ case(state)
 		 ram_read=0;
 		 rom_read=0;
 		 ad_sel=0;
-		 fetch=2'b01;		 
-		 end 
-		 end
-    S10: begin
-		 write_r=0;
-		 read_r=0;
-		 PC_en=0;
-		 ac_ena=1;
-		 ram_ena=0;
-		 rom_ena=0;
-		 ram_write=0;
-		 ram_read=0;
-		 rom_read=0;
-		 ad_sel=0;
-		 fetch=2'b01;
-		 		 
-		 //ac_ena=1;
+		 fetch=2'b00;
+		 pc_in = 0;
+		 im_int = 0;
 		 end
     S11: begin // LDM, step1, write reg
 		 write_r=1;
@@ -339,29 +373,16 @@ case(state)
 		 PC_en=0;
 		 ac_ena=1;
 		 ram_ena=0;
-		 rom_ena=0;
+		 im_int = 0;
 		 ram_write=0;
 		 ram_read=0;
-		 rom_read=0;
+		 rom_ena=1;
+		 rom_read=1;
 		 ad_sel=0;
 		 fetch=2'b00;
-		 		 
-		 //write_r=1;
+		 pc_in = 0;
 		 end
-    S12: begin  // same as s11
-		 write_r=1;
-		 read_r=0;
-		 PC_en=0;
-		 ac_ena=1;
-		 ram_ena=0;
-		 rom_ena=0;
-		 ram_write=0;
-		 ram_read=0;
-		 rom_read=0;
-		 ad_sel=0;
-		 fetch=2'b00;	 
-		 end
-default: begin
+    S12: begin 
 		 write_r=0;
 		 read_r=0;
 		 PC_en=0;
@@ -372,17 +393,70 @@ default: begin
 		 ram_read=0;
 		 rom_read=0;
 		 ad_sel=0;
-		 fetch=2'b00;		 
+		 pc_in = 0;
+		 fetch=2'b00;	
+		 im_int = 0; 
+		 end
+	 S13: begin 
+		 write_r=0;
+		 read_r=0;
+		 PC_en=1;
+		 ac_ena=0; 
+		 ram_ena=0;
+		 rom_ena=1;
+		 ram_write=0;
+		 ram_read=0;
+		 rom_read=1;
+		 pc_in = 1;
+		 ad_sel=0;
+	    fetch=2'b01; 
+		 im_int = 0;
+		 end
+	S14: begin
+		 write_r=0;
+		 read_r=0;
+		 PC_en=0;
+		 pc_in=0;
+		 ac_ena=1;
+		 ram_ena=0;
+		 rom_ena=1;
+		 ram_write=0;
+		 ram_read=0;
+		 rom_read=1;
+		 ad_sel=0;
+		 fetch=2'b00;	
+		 im_int = 0; 
+		 end
+	S15: begin 
+		 write_r=0;
+		 read_r=0;
+		 PC_en=0;
+		 pc_in=0;
+		 ac_ena=0;
+		 ram_ena=0;
+		 rom_ena=1;
+		 ram_write=0;
+		 ram_read=0;
+		 rom_read=1;
+		 ad_sel=0;
+		 fetch=2'b00;	
+		 im_int = 0; 
+		 end
+default: begin
+		 write_r=0;
+		 read_r=0;
+		 PC_en=0;
+		 ac_ena=0;
+		 ram_ena=0;
+		 rom_ena=0;	
+		 ram_write=0;
+		 ram_read=0;
+		 rom_read=0;
+		 ad_sel=0;
+		 pc_in=0;
+		 fetch=2'b00;	
+		 im_int = 0;
 		 end
 endcase
 end
-
-
 endmodule
-
-
-
-
-
-
-

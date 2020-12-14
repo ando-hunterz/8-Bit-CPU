@@ -97,7 +97,6 @@ S12:		next_state=S0;
 S13: 		next_state=S15;
 S14:		next_state=S0;
 S15:		next_state=S0;
-S17:		next_state=S0;
 default: next_state=Sidle;
 endcase
 end
