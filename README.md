@@ -57,4 +57,20 @@ Address Multiplexer digunakan untuk memilih apakah address yang akan diakses ada
 ![Address Multiplexer](github_assets/ADR_MUX.png)
 
 ## Instruksi
+CPU ini mendukung sampai dengan 16 Instruksi, namun dalam implementasi ini, instruksi yang dipakai adalah sebanyak 12 Instruksi yaitu
 
+Instruksi |Binary|Operation|Deskripsi|Tipe
+---|---|---|---|---
+NOP|0000|**No** O**p**eration|Tidak ada instruksi yang dilakukan|Short
+LDO|0001|**L**oa**d** from R**O**M|Mengambil data dari ROM|Long
+LDA|0010|**L**oa**d** from R**A**M| Mengambil data dari RAM|Long
+STO|0011|**Sto**re register data to RAM|menambil data dari register ke ram|Long
+PRE|0100|**Pre**fetch data from REG|Mengambil data dari REG dan memasukan ke ACCUM|Short
+ADD|0101|**Add** data from register with ACCUM| Mengambil data dari register dan menambahkannya dengan accumulator|Short
+LDM|0110|**L**oa**d** Multiple|Mengambil data dari ACCUM ke Register|Short
+ADN|0111|**Add** integer to ACCUM|Menambah integer kedalam ACCUM|Short
+INC|1000|**Inc**rease ACCUM count|Menambah hasil dari ACCUM dengan integer satu |Short
+DEC|1001|**Dec**rease ACCUM count|Mengurangi hasil dari ACCUM dengan integer satu|Short
+JMP|1010|**J**u**mp** to Address|Mengambil address dari ROM dan melompat ke instruksi dengan address tersebut|Long
+CLR|1011|**Cl**ea**r** ACCUM|Melakukan Pengosongan pada ACCUM|Short
+HLT|1111|**H**a**lt** the operation|Memberhentikan Operasi|short
