@@ -2,7 +2,7 @@
 ## Arsitektur
 CPU ini memiliki arsitektur yang berdasarkan dari arsitektur Von-Neumman dimana, Control Unit, ALU dan Register berada didalam satu bagian yang disebut dengan CPU, kemudian memory unit terdapat terpisah. Gambar dari Von Neumman Architecture dapat dilihat dibawah ini
 
-![Von-Neumann](https://github.com/ando-hunterz/8-Bit-CPU/blob/master/github_assets/Von_neumann.png)
+![Von-Neumann](https://github.com/ando-hunterz/8-Bit-CPU/blob/master/github_assets/Von_Neumann.png)
 
 ## Macro Architecture
 CPU ini memiliki Macro Architecture sebagai Berikut
@@ -24,6 +24,8 @@ ALU berfungsi sebagai otak proses penghitungan dari CPU, pada CPU ini, fungsi ma
 
 ### Register
 Pada CPU ini, Register yang ada berjumlah 16, dimana tiap register dapat menampung sebanyak 8 bit. Sehingga jumlah dari Register adalah sebanyak 16 Byte.
+
+![Register](github_assets/Register)
 
 ### Accumulator
 Accumulator bekerja sebagai tempat penyimpanan sementara dari hasil proses perhitungan dari ALU. Accumulator yang ada mendapat data dari ALU dan data yang dikeluarkan kemudian juga akan dipakai kembali oleh ALU.
